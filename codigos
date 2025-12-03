@@ -1,0 +1,244 @@
+1. Conductor y Vehículo
+Este fragmento muestra la relación Uno a Muchos entre CONDUCTOR y VEHICULO, donde un vehículo puede tener un conductor. Sin embargo, la clave foránea VEHICULO_id INT en CONDUCTOR sugiere que un Conductor está relacionado con un Vehículo (que es lo que se ve en el diagrama, una relación 1:1 o 1:N donde el CONDUCTOR tiene la FK). La relación en el diagrama es Uno a Uno (1:1), indicando que un conductor tiene un vehículo y un vehículo tiene un conductor.
+
+SQL
+
+CREATE TABLE VEHICULO (
+    id INT NOT NULL AUTO_INCREMENT,
+    tipo_vehiculo VARCHAR(45),
+    placa VARCHAR(45) UNIQUE,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE CONDUCTOR (
+    id INT NOT NULL AUTO_INCREMENT,
+    primer_nombre VARCHAR(45),
+    segundo_nombre VARCHAR(45),
+    primer_apellido VARCHAR(45),
+    segundo_apellido VARCHAR(45),
+    documento VARCHAR(45) UNIQUE,
+    VEHICULO_id INT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (VEHICULO_id) REFERENCES VEHICULO(id)
+    -- Si la relación es 1:1, se debe añadir UNIQUE a la FK:
+    -- UNIQUE KEY (VEHICULO_id) 
+);
+2. Georlocalización
+Tabla de una sola entidad, presumiblemente para almacenar direcciones.
+
+SQL
+
+CREATE TABLE GEOLOCALIZACION (
+    id INT NOT NULL AUTO_INCREMENT,
+    num_calle VARCHAR(45),
+    num_car VARCHAR(45),
+    num_residencia VARCHAR(45),
+    PRIMARY KEY (id)
+);
+3. Usuario y Teléfono de Usuario
+Muestra una relación Uno a Muchos (1:N) entre USUARIO y TELEFONO_USR. Un usuario puede tener múltiples números de teléfono.
+
+SQL
+
+CREATE TABLE USUARIO (
+    id INT NOT NULL AUTO_INCREMENT,
+    primer_nombre VARCHAR(45),
+    segundo_nombre VARCHAR(45),
+    primer_apellido VARCHAR(45),
+    segundo_apellido VARCHAR(45),
+    documento VARCHAR(45) UNIQUE,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE TELEFONO_USR (
+    id INT NOT NULL AUTO_INCREMENT,
+    tipo VARCHAR(45),
+    numero VARCHAR(45),
+    USUARIO_id INT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (USUARIO_id) REFERENCES USUARIO(id)
+);
+4. Registro de Automóviles
+Tabla de una sola entidad.
+
+SQL
+
+CREATE TABLE REGISTRO_AUTOMOVILES (
+    id INT NOT NULL AUTO_INCREMENT,
+    marca_del_vehiculo VARCHAR(45),
+    serie_del_vehiculo VARCHAR(45),
+    modelo_del_vehiculo VARCHAR(45),
+    placa_del_vehiculo VARCHAR(45) UNIQUE,
+    PRIMARY KEY (id)
+);
+5. Empleados, Perfil y Red Social
+Implementa una relación Muchos a Muchos (N:M) entre EMPLEADOS y RED_SOCIAL a través de la tabla de enlace PERFIL. Un empleado puede tener muchos perfiles de redes sociales y una red social puede ser usada por muchos empleados.
+
+SQL
+
+CREATE TABLE EMPLEADOS (
+    id INT NOT NULL AUTO_INCREMENT,
+    primer_nombre VARCHAR(45),
+    segundo_nombre VARCHAR(45),
+    primer_apellido VARCHAR(45),
+    segundo_apellido VARCHAR(45),
+    documento VARCHAR(45) UNIQUE,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE RED_SOCIAL (
+    id INT NOT NULL AUTO_INCREMENT,
+    nombre VARCHAR(45) UNIQUE,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE PERFIL (
+    EMPLEADOS_id INT NOT NULL,
+    RED_SOCIAL_id INT NOT NULL,
+    url VARCHAR(45),
+    PRIMARY KEY (EMPLEADOS_id, RED_SOCIAL_id),
+    FOREIGN KEY (EMPLEADOS_id) REFERENCES EMPLEADOS(id),
+    FOREIGN KEY (RED_SOCIAL_id) REFERENCES RED_SOCIAL(id)
+);
+6. Usuario, Juegos y Lista de Juegos
+Implementa una relación Muchos a Muchos (N:M) entre USUARIO y JUEGOS a través de la tabla de enlace LISTA_DE_JUEGOS. Un usuario puede tener muchos juegos y un juego puede estar en la lista de muchos usuarios.
+
+SQL
+
+CREATE TABLE JUEGOS (
+    id INT NOT NULL AUTO_INCREMENT,
+    nombre_juego VARCHAR(45),
+    categoria VARCHAR(45),
+    PRIMARY KEY (id)
+);
+
+-- Nota: Esta tabla USUARIO es diferente de la del punto 3
+CREATE TABLE USUARIO (
+    id INT NOT NULL AUTO_INCREMENT,
+    nombre_usuario VARCHAR(45) UNIQUE,
+    correo VARCHAR(45),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE LISTA_DE_JUEGOS (
+    JUEGOS_id INT NOT NULL,
+    USUARIO_id INT NOT NULL,
+    fecha_agregado VARCHAR(45),
+    PRIMARY KEY (JUEGOS_id, USUARIO_id),
+    FOREIGN KEY (JUEGOS_id) REFERENCES JUEGOS(id),
+    FOREIGN KEY (USUARIO_id) REFERENCES USUARIO(id)
+);
+7. Cliente, Compra, Producto y Detalle de Compra
+Este es un esquema típico de ventas. CLIENTE tiene una relación Uno a Muchos (1:N) con COMPRA. COMPRA y PRODUCTO tienen una relación Muchos a Muchos (N:M) a través de la tabla de enlace DETALLE_COMPRA.
+
+SQL
+
+CREATE TABLE CLIENTE (
+    id INT NOT NULL AUTO_INCREMENT,
+    nombre VARCHAR(45),
+    correo VARCHAR(45),
+    telefono VARCHAR(45),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE COMPRA (
+    id INT NOT NULL AUTO_INCREMENT,
+    fecha_compra VARCHAR(45),
+    total VARCHAR(45),
+    CLIENTE_id INT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (CLIENTE_id) REFERENCES CLIENTE(id)
+);
+
+CREATE TABLE PRODUCTO (
+    id INT NOT NULL AUTO_INCREMENT,
+    nombre_producto VARCHAR(45),
+    precio VARCHAR(45),
+    PRODUCTOcol VARCHAR(45),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE DETALLE_COMPRA (
+    PRODUCTO_id INT NOT NULL,
+    COMPRA_id INT NOT NULL,
+    cantidad VARCHAR(45),
+    PRIMARY KEY (PRODUCTO_id, COMPRA_id),
+    FOREIGN KEY (PRODUCTO_id) REFERENCES PRODUCTO(id),
+    FOREIGN KEY (COMPRA_id) REFERENCES COMPRA(id)
+);
+8. Licencia, Tipo de Licencia y Tipo de Suscripción
+LICENCIA tiene una relación Uno a Muchos (1:N) con TIPO_DE_LICENCIA y también con TIPO_DE_SUSCRIPCION.
+
+SQL
+
+CREATE TABLE TIPO_DE_LICENCIA (
+    id INT NOT NULL AUTO_INCREMENT,
+    tipo VARCHAR(45) UNIQUE,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE TIPO_DE_SUSCRIPCION (
+    id INT NOT NULL AUTO_INCREMENT,
+    tipo_suscripcion VARCHAR(45) UNIQUE,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE LICENCIA (
+    id INT NOT NULL AUTO_INCREMENT,
+    nombre VARCHAR(45),
+    precio VARCHAR(45),
+    TIPO_DE_LICENCIA_id INT NOT NULL,
+    TIPO_DE_SUSCRIPCION_id INT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (TIPO_DE_LICENCIA_id) REFERENCES TIPO_DE_LICENCIA(id),
+    FOREIGN KEY (TIPO_DE_SUSCRIPCION_id) REFERENCES TIPO_DE_SUSCRIPCION(id)
+);
+9. Usuario y Tipo de Usuario
+Muestra una relación Uno a Muchos (1:N) entre TIPO_USUARIO y USUARIO. Un tipo de usuario puede tener muchos usuarios.
+
+SQL
+
+CREATE TABLE TIPO_USUARIO (
+    id INT NOT NULL AUTO_INCREMENT,
+    nombre VARCHAR(45) UNIQUE,
+    PRIMARY KEY (id)
+);
+
+-- Nota: Esta tabla USUARIO es diferente de las anteriores
+CREATE TABLE USUARIO (
+    id INT NOT NULL AUTO_INCREMENT,
+    primer_nombre VARCHAR(45),
+    segundo_nombre VARCHAR(45),
+    primer_apellido VARCHAR(45),
+    segundo_apellido VARCHAR(45),
+    identificacion VARCHAR(45) UNIQUE,
+    hora_de_entrada VARCHAR(45),
+    hora_de_salida VARCHAR(45),
+    TIPO_USUARIO_id INT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (TIPO_USUARIO_id) REFERENCES TIPO_USUARIO(id)
+);
+10. Recetas, Tipo de Carne y Receta Carnes
+Implementa una relación Muchos a Muchos (N:M) entre RECETAS y TIPO_DE_CARNE a través de la tabla de enlace RECETA_CARNES. Una receta puede usar varios tipos de carne y un tipo de carne puede estar en varias recetas.
+
+SQL
+
+CREATE TABLE TIPO_DE_CARNE (
+    id INT NOT NULL AUTO_INCREMENT,
+    nombre VARCHAR(45) UNIQUE,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE RECETAS (
+    id INT NOT NULL AUTO_INCREMENT,
+    nombre VARCHAR(45),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE RECETA_CARNES (
+    RECETAS_id INT NOT NULL,
+    TIPO_DE_CARNE_id INT NOT NULL,
+    PRIMARY KEY (RECETAS_id, TIPO_DE_CARNE_id),
+    FOREIGN KEY (RECETAS_id) REFERENCES RECETAS(id),
+    FOREIGN KEY (TIPO_DE_CARNE_id) REFERENCES TIPO_DE_CARNE(id)
+);
